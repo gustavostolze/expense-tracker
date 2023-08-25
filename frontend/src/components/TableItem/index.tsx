@@ -2,10 +2,10 @@
 import { useContext, useState } from "react";
 import { Category } from "../../Types/Category";
 import { Item } from "../../Types/Item";
-import { formatDate, formatDefaultInputDate } from "../../utils/dateFilter";
+import { formatDate } from "../../utils/dateFilter";
 import * as C from "./styles";
 import * as D from "../InsertItem/styles";
-import { overlayFn, overlayManagerFn } from "../../utils/modal";
+import { overlayManagerFn } from "../../utils/modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
@@ -15,13 +15,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ManagerContext } from "../../template/App/App";
 import { ManagerContextType } from "../../Types/ManagerContext";
+import axios from "axios";
 
 type Props = {
   item: Item;
   categoriesList: Category;
+  setIsLoading: (loading: boolean) => void;
 };
 
-export const TableItem = ({ item, categoriesList }: Props) => {
+export const TableItem = ({ item, categoriesList, setIsLoading }: Props) => {
   const [dateField, setDateField] = useState(item.date);
   const [categoryField, setCategoryField] = useState(item.category);
   const [titleField, setTitleField] = useState(item.title);
@@ -37,33 +39,38 @@ export const TableItem = ({ item, categoriesList }: Props) => {
   const handleTrash = (id: string) => {
     overlayManagerFn("delete", id, isTrashOpen, setIsTrashOpen);
   };
-  const handleEdit = (id: string) => {
+  const handleEdit = async (id: string) => {
     overlayManagerFn("edit", id, isEditOpen, setIsEditOpen);
   };
 
-  const handleDeleteItem = (id: string) => {
-    const newArray: Item[] = [];
-    filteredList.filter((items) => {
-      if (items.id !== id) {
-        newArray.push(items);
-      }
-    });
-    setFilteredList(newArray);
-    overlayManagerFn("delete", id, isTrashOpen, setIsTrashOpen);
+  const handleDeleteItem = async (id: string) => {
+    setIsLoading(true);
+    await axios
+      .delete(`http://localhost:3333/items/${id}`)
+      .then((response) => {
+        console.log(response);
+        overlayManagerFn("delete", id, isTrashOpen, setIsTrashOpen);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const handleSaveChange = (id: string) => {
-    filteredList.filter((items) => {
-      if (items.id === id) {
-        if (
-          items.title === titleField &&
-          items.category === categoryField &&
-          item.value === valueField &&
-          items.date === dateField
-        )
-          console.log("OPA, C N MUDOU NADA MEU PARCEIRINHO KAKAKWDAKWDKAWDK");
-      }
-    });
+  const handleSaveChange = async (id: string) => {
+    setIsLoading(true);
+    await axios
+      .put(`http://localhost:3333/items/${id}`, {
+        date: dateField,
+        category: categoryField,
+        title: titleField,
+        value: valueField,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
   return (
     <C.TableLine>

@@ -1,14 +1,15 @@
-import { Category } from '../../Types/Category';
-import { Item } from '../../Types/Item';
-import { TableItem } from '../TableItem';
-import * as C from './styles';
+import { Category } from "../../Types/Category";
+import { Item } from "../../Types/Item";
+import { TableItem } from "../TableItem";
+import * as C from "./styles";
 
 type Props = {
   list: Item[];
   categoriesList: Category;
+  setIsLoading: (loading: boolean) => void;
 };
 
-export const TableArea = ({ list, categoriesList }: Props) => {
+export const TableArea = ({ list, categoriesList, setIsLoading }: Props) => {
   return (
     <C.Table>
       <thead>
@@ -21,7 +22,12 @@ export const TableArea = ({ list, categoriesList }: Props) => {
       </thead>
       <tbody>
         {list.map((item, index) => (
-          <TableItem key={index} item={item} categoriesList={categoriesList} />
+          <TableItem
+            key={index}
+            item={item}
+            categoriesList={categoriesList}
+            setIsLoading={setIsLoading}
+          />
         ))}
       </tbody>
     </C.Table>

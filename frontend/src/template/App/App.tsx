@@ -33,6 +33,7 @@ const App = () => {
           setFilteredList={setFilteredList}
           categoriesList={categoriesList}
           setCategoriesList={setCategoriesList}
+          setIsLoading={setIsLoading}
         />
       )}
     </C.Container>

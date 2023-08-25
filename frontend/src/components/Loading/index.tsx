@@ -1,38 +1,42 @@
 import axios from "axios";
+import './styles.css';
 
 type Props = {
   setIsLoading: (loading: boolean) => void;
   setList: (response: any) => void;
   setCategoriesList: (response: any) => void;
 };
-
 export const Loading = ({
   setIsLoading,
   setList,
   setCategoriesList,
 }: Props) => {
-  const fetchData = new Promise((response, reject) => {
-    response(async () => {
-      await axios
-        .get("http://localhost:3333/items")
-        .then((response) => setList(response.data))
-        .catch((error) => console.log(error));
-      await axios
-        .get("http://localhost:3333/categories")
-        .then((response) => setCategoriesList(response.data))
-        .catch((error) => console.log(error));
-    });
-    reject(console.log('SOMETHING WENT WRONG ON FETCH DATA'));
-  });
-
-  fetchData.then(() => {
-    console.log('FETCH DATA SUSCESS');
-    setIsLoading(false);
-  })
-
+  const fetchData = async () => {
+    await axios
+      .get("http://localhost:3333/items")
+      .then((res) => setList(res.data))
+      .catch((error) => {
+        console.log(error);
+      });
+    await axios
+      .get("http://localhost:3333/categories")
+      .then((res) => {
+        setCategoriesList(res.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  fetchData();
   return (
     <div>
-      <h1>Loading</h1>
+      <div className="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </div>
   );
 };

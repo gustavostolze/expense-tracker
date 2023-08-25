@@ -7,14 +7,16 @@ import * as C from "./styles";
 import { filterListByMonth, getCurrentMonth } from "../../utils/dateFilter";
 import { Category } from "../../Types/Category";
 import { Item } from "../../Types/Item";
+import axios from "axios";
 
 type Props = {
   list: Item[];
-  setList: (newList: any) => void,
+  setList: (newList: any) => void;
   filteredList: Item[];
   setFilteredList: (newList: any) => void;
   categoriesList: Category;
-  setCategoriesList: (list: Category) => void,
+  setCategoriesList: (list: Category) => void;
+  setIsLoading: (loading: boolean) => void;
 };
 
 export const LoadedPage = ({
@@ -24,6 +26,7 @@ export const LoadedPage = ({
   setFilteredList,
   categoriesList,
   setCategoriesList,
+  setIsLoading,
 }: Props) => {
   const [currentMonth, setCurrentMonth] = useState(getCurrentMonth());
   const [income, setIncome] = useState(0);
@@ -31,7 +34,7 @@ export const LoadedPage = ({
 
   useEffect(() => {
     setFilteredList(filterListByMonth(list, currentMonth));
-  }, [list, currentMonth]);
+  }, [list, currentMonth, setFilteredList]);
 
   useEffect(() => {
     let incomeCount = 0;
@@ -54,22 +57,37 @@ export const LoadedPage = ({
     setCurrentMonth(newMonth);
   };
 
-  const handleAddItem = (item: Item) => {
-    const newList = [...list];
-    newList.push(item);
-    setList(newList);
+  const handleAddItem = async (item: Item) => {
+    setIsLoading(true);
+    axios
+      .post("http://localhost:3333/items", item)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  const handleAddCategory = (
+  const handleAddCategory = async (
     categoryKey: string,
     categoryObj: {
       title: string;
       color: string;
       expense: boolean | undefined;
     }
-  ): void => {
-    const newCategory = { ...categoryObj };
-    setCategoriesList({ ...categoriesList, [categoryKey]: newCategory });
+  ) => {
+    setIsLoading(true);
+    await axios
+      .post("http://localhost:3333/categories", {
+        [categoryKey]: categoryObj,
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
   return (
     <>
@@ -94,7 +112,7 @@ export const LoadedPage = ({
         {/* =-=-=-=-=-= */}
 
         <ManagerContext.Provider value={{ filteredList, setFilteredList }}>
-          <TableArea list={filteredList} categoriesList={categoriesList} />
+          <TableArea list={filteredList} categoriesList={categoriesList} setIsLoading={setIsLoading} />
         </ManagerContext.Provider>
       </C.Body>
     </>

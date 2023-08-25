@@ -22,7 +22,7 @@ export const InsertCategory = ({ onAdd, categoriesList }: Props) => {
   );
   const categoriesListKeys = Object.keys(categoriesList);
 
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     const errors: string[] = [];
 
     if (categoryTitle === '') {
@@ -50,7 +50,7 @@ export const InsertCategory = ({ onAdd, categoriesList }: Props) => {
     if (errors.length > 0) {
       alert(errors.join('\n'));
     } else {
-      onAdd(categoryKey, {
+        onAdd(categoryKey, {
         title: categoryTitle,
         color: colorField,
         expense: categoryExpense,

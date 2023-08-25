@@ -3,10 +3,8 @@ import { useState } from 'react';
 import * as C from './styles';
 
 import { Item } from '../../Types/Item';
-import { newDateAdjusted } from '../../utils/dateFilter';
 import { Category } from '../../Types/Category';
 import { overlayFn } from '../../utils/modal';
-import { items } from '../../data/items';
 import { keyGen } from '../../utils/idGen';
 
 type Props = {
@@ -43,11 +41,11 @@ export const InsertItem = ({ onAdd, categoriesList }: Props) => {
       alert(errors.join('\n'));
     } else {
       onAdd({
+        id: keyGen(),
         date: dateField,
         category: categoryField,
         title: titleField,
         value: valueField,
-        id: keyGen(),
       });
       clearFields();
       overlayFn('item', isModalOpen, setIsModalOpen);
